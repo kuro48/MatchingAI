@@ -1,4 +1,3 @@
-//  ContentView.swift
 import SwiftUI
 import NaturalLanguage
 
@@ -17,43 +16,52 @@ struct ContentView: View {
     @State private var selectedPreferences: [Hobby] = []
     @State private var showPreferenceOptions: Bool = false
 
+    // 年齢・都道府県・職業の状態
+    @State private var age: Int?
+    @State private var selectedPrefecture: String = ""
+    @State private var selectedOccupation: String = ""
+
     let maxSelection = 5
 
     let hobbies: [Hobby] = [
-        // 音楽
         Hobby(name: "音楽鑑賞", icon: "🎵", category: "音楽"),
         Hobby(name: "ライブ鑑賞", icon: "🎤", category: "音楽"),
         Hobby(name: "カラオケ", icon: "🎙️", category: "音楽"),
-
-        // 芸術
         Hobby(name: "映画鑑賞", icon: "🎬", category: "芸術"),
         Hobby(name: "美術館巡り", icon: "🖼️", category: "芸術"),
         Hobby(name: "舞台鑑賞", icon: "🎭", category: "芸術"),
-
-        // 知識・教養
         Hobby(name: "読書", icon: "📚", category: "知識"),
         Hobby(name: "英会話学習", icon: "🗣️", category: "知識"),
-
-        // グルメ
         Hobby(name: "カフェ巡り", icon: "☕", category: "グルメ"),
         Hobby(name: "料理", icon: "🍳", category: "グルメ"),
         Hobby(name: "ラーメン巡り", icon: "🍜", category: "グルメ"),
-
-        // アウトドア
         Hobby(name: "旅行", icon: "✈️", category: "アウトドア"),
         Hobby(name: "登山", icon: "⛰️", category: "アウトドア"),
         Hobby(name: "キャンプ", icon: "🏕️", category: "アウトドア"),
-
-        // エンタメ
         Hobby(name: "ゲーム", icon: "🎮", category: "エンタメ"),
         Hobby(name: "アニメ", icon: "🧸", category: "エンタメ"),
         Hobby(name: "YouTube鑑賞", icon: "📺", category: "エンタメ"),
-
-        // 日常・生活
         Hobby(name: "ショッピング", icon: "🛍️", category: "日常"),
         Hobby(name: "ネイル", icon: "💅", category: "日常"),
         Hobby(name: "ファッション", icon: "👗", category: "日常"),
         Hobby(name: "散歩", icon: "🚶", category: "日常")
+    ]
+
+    let prefectures = [
+        "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
+        "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県",
+        "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県",
+        "岐阜県", "静岡県", "愛知県", "三重県",
+        "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県",
+        "鳥取県", "島根県", "岡山県", "広島県", "山口県",
+        "徳島県", "香川県", "愛媛県", "高知県",
+        "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
+    ]
+
+    let occupations = [
+        "会社員", "学生", "公務員", "看護師・医療職", "教員・教育関連",
+        "ITエンジニア", "クリエイター", "営業職", "接客・販売", "フリーランス",
+        "経営者", "主婦・主夫", "その他"
     ]
 
     var groupedHobbies: [String: [Hobby]] {
@@ -64,6 +72,58 @@ struct ContentView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+
+                    // 年齢・居住地・職業
+                    SectionCard(title: "年齢・居住地・職業を入力してください") {
+                        VStack(alignment: .leading, spacing: 16) {
+
+                            // 年齢
+                            VStack(alignment: .leading) {
+                                Text("年齢")
+                                    .font(.subheadline)
+                                TextField("年齢を入力", value: $age, format: .number)
+                                    .keyboardType(.numberPad)
+                                    .padding(8)
+                                    .background(Color.white)
+                                    .cornerRadius(8)
+                                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
+                            }
+
+                            // 居住地
+                            VStack(alignment: .leading) {
+                                Text("居住地（都道府県）")
+                                    .font(.subheadline)
+                                Picker("都道府県を選択", selection: $selectedPrefecture) {
+                                    ForEach(prefectures, id: \.self) { prefecture in
+                                        Text(prefecture)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                                .padding(8)
+                                .background(Color.white)
+                                .cornerRadius(8)
+                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
+                            }
+
+                            // 職業
+                            VStack(alignment: .leading) {
+                                Text("職業")
+                                    .font(.subheadline)
+                                Picker("職業を選択", selection: $selectedOccupation) {
+                                    ForEach(occupations, id: \.self) { occupation in
+                                        Text(occupation)
+                                    }
+                                }
+                                .pickerStyle(MenuPickerStyle())
+                                .padding(8)
+                                .background(Color.white)
+                                .cornerRadius(8)
+                                .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
+                            }
+                        }
+                    }
+
+                    // 趣味選択
                     SectionCard(title: "気になる趣味を最大5つ選択（\(selectedPreferences.count)/\(maxSelection)選択中）") {
                         Button(action: {
                             withAnimation {
@@ -126,6 +186,7 @@ struct ContentView: View {
                         }
                     }
 
+                    // プロフィール入力
                     SectionCard(title: "相手のプロフィールを入力してください") {
                         TextEditor(text: $profileText)
                             .frame(height: 150)
@@ -135,6 +196,7 @@ struct ContentView: View {
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3), lineWidth: 1))
                     }
 
+                    // キーワード
                     if !extractedKeywords.isEmpty {
                         SectionCard(title: "抽出されたキーワード") {
                             WrappingHStack(alignment: .leading) {
@@ -150,6 +212,7 @@ struct ContentView: View {
                         }
                     }
 
+                    // メッセージ提案
                     if !suggestedMessage.isEmpty {
                         SectionCard(title: "初回メッセージの提案") {
                             VStack(alignment: .leading, spacing: 8) {
@@ -171,6 +234,7 @@ struct ContentView: View {
                         }
                     }
 
+                    // 話題提案
                     if !suggestedTopics.isEmpty {
                         SectionCard(title: "デートの話題提案") {
                             VStack(alignment: .leading, spacing: 4) {
